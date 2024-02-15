@@ -1,0 +1,27 @@
+name: S3 Bucket Deploy
+
+on: [pull_request]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "12.x"
+
+            - name: Install packages
+              run: npm ci
+
+            - name: Build
+              run: npm run build
+              env:
+                  REACT_APP_PUBLIC_URL: ${{ vars.REACT_APP_PUBLIC_URL }}
+                  REACT_APP_SERVER_URL: ${{ vars.REACT_APP_SERVER_URL }}
+                  REACT_APP_RENDERER_URL: ${{ vars.REACT_APP_RENDERER_URL }}
+
+            - name: Sync to S3 bucket
+              run:
